@@ -1,77 +1,125 @@
 <!DOCTYPE html>
-<html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" 
-      content="width=device-width, initial-scale=1.0">
-      <title> Email Lead Finder</title>
-      <Link rel="stylesheet" href="stylesheet.css">
-      
-     </head>
-    <body>
-      <div class="container">
-       <header class="header">
-         
-         <h1 class="header-title">Leads Generator</h1>
-        
-         
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Finder</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: #f0f0f0;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+    }
 
-         <div class="Create-lead">
-           <button class="create-leadbtn"> Create new Lead</button>
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffa500;
+    }
 
-         </div>
-       </header>
+    .input-group {
+      margin-bottom: 15px;
+    }
 
-       
-       
-     
-        
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      background-color: #1f1f1f;
+      color: #fff;
+      border: 1px solid #333;
+    }
 
-        <section class="table-section">
-          <h2 class="section-title"> List of Generated Leads</h2>
-          <!--insert horizontal line here-->
-          <table class="table">
-            <tr>
-              <th>Name</th>
-              <th>UUID</th>
-              <th>Total Leads</th>
-              <th>Date</th>
+    input:focus {
+      outline: none;
+      border-color: #ffa500;
+    }
 
-            </tr>
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      background-color: #ffa500;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-            <tr>
-              <td>Gee</td>
-              <td>9e17dbcc-77cl-4244-bd51-6ae807402529</td>
-              <td>1</td>
-              <td>30/01/2025</td>
-              <td><button class="details-btn">Details</button></td>
+    button:hover {
+      background-color: #e69500;
+    }
 
-            </tr>
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #1c1c1c;
+      border-radius: 5px;
+      white-space: pre-line;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
 
-           
-            <tr>
-              <td>Geecore Limited</td>
-              <td>9e17db87-70be-49a7-9762-943d4918c240</td>
-              <td>1</td>
-              <td>30/01/2025</td>
-             <td> <button class="details-btn">Details</button> </td>
-            </tr>
+  <h1>Email Finder</h1>
 
-            
-          </table>
-        </section>
-        
-        <div class="pagination">
-          <button class="pagination-btn">Prev</button>
-          <span class="page-number">1</span>
-          <button class="pagination-btn">Next</button>
-         </div>
+  <div class="input-group">
+    <input type="text" id="firstName" placeholder="First Name (e.g. Elon)" />
+  </div>
+  <div class="input-group">
+    <input type="text" id="lastName" placeholder="Last Name (e.g. Musk)" />
+  </div>
+  <div class="input-group">
+    <input type="text" id="domain" placeholder="Company Domain (e.g. tesla.com)" />
+  </div>
 
+  <button id="findButton">Find Email</button>
 
-      </div>
-         
+  <div class="results" id="result"></div>
 
+  <script>
+    document.getElementById('findButton').addEventListener('click', async () => {
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const domain = document.getElementById('domain').value.trim();
+      const result = document.getElementById('result');
 
-          
-    </body>
+      if (!firstName || !lastName || !domain) {
+        result.textContent = 'Please fill in all fields.';
+        return;
+      }
+
+      result.textContent = 'Searching...';
+
+      const apiKey = '02cfc5e6eaabff51159510b337a91b65a4ade7a4'; // replace with your own if needed
+
+      const apiUrl = `https://api.hunter.io/v2/email-finder?domain=${encodeURIComponent(domain)}&first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}&api_key=${apiKey}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.data && data.data.email) {
+          result.textContent = `Email: ${data.data.email}
+First Name: ${data.data.first_name || '-'}
+Last Name: ${data.data.last_name || '-'}
+Position: ${data.data.position || '-'}`;
+        } else {
+          result.textContent = 'No email found for this person.';
+        }
+      } catch (error) {
+        console.error(error);
+        result.textContent = 'Something went wrong. Please try again.';
+      }
+    });
+  </script>
+
+</body>
 </html>
